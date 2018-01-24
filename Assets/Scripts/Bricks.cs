@@ -5,12 +5,21 @@ using UnityEngine.UI;
 
 public class Bricks : MonoBehaviour {
 
+    public static Bricks instansiate;
     public Gradient gradian;
     public SpriteRenderer breakSprite;
     private Text scoreTxt;
     public static int score=3;
     private int breakHealth;
+   
 
+    void Awake()
+    {
+        if (instansiate==null)
+        {
+            instansiate = this;
+        }
+    }
 	// Use this for initialization
 	void Start () {
         breakHealth = score;
@@ -19,11 +28,11 @@ public class Bricks : MonoBehaviour {
         scoreTxt = GetComponentInChildren<Text>();
         scoreTxt.text =""+ breakHealth;
     }
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+    
+    // Update is called once per frame
+    void Update () {
+        
+    }
 
     void OnCollisionEnter2D(Collision2D target)
     {
@@ -37,5 +46,6 @@ public class Bricks : MonoBehaviour {
             }
             scoreTxt.text = "" + breakHealth;
         }
+
     }
 }

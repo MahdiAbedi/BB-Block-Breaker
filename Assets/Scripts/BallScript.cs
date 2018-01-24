@@ -1,15 +1,19 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.UI;
 public class BallScript : MonoBehaviour {
 
+    public static BallScript instance;
     public float ballSpeed = 12f;
-
     public Rigidbody2D myBody;
     private Vector2 mouseStartPosition, mouseEndPosition;
     private Vector2 ballVelocity;
     public GameObject arrow;
+    public GameObject ballScoreText;
+    public int ballScore=1;
+
+
     public enum BallState
     {
         aim,fired,waiting
@@ -20,17 +24,32 @@ public class BallScript : MonoBehaviour {
     void Start()
     {
         currentBallState = BallState.aim;
+        //ballScoreText.GetComponent<Text>().text = "*" + ballScore;
     }
     // Use this for initialization
     void Awake () {
         myBody = GetComponent<Rigidbody2D>();
-	}
+        if (!instance)
+        {
+            instance = this;
+        }
+        else
+        {
+           // Destroy(instance);
+        }
+    }
 	
 	// Update is called once per frame
 	void FixedUpdate () {
         switch (currentBallState)
         {
             case BallState.aim:
+                if (ballScore>1)
+                {
+                    ballScoreText.GetComponent<Text>().text = "*" + ballScore;
+                    ballScoreText.SetActive(true);
+                }
+                
                 if (Input.GetMouseButton(0))
                 {
                     MouseHoldDown();
@@ -47,6 +66,7 @@ public class BallScript : MonoBehaviour {
                 }
                 break;
             case BallState.fired:
+                ballScoreText.SetActive(false);
                 break;
             case BallState.waiting:
                 break;
@@ -92,4 +112,15 @@ public class BallScript : MonoBehaviour {
         currentBallState = BallState.fired;
 
     }
+
+    void OnCollisionEnter2D(Collision2D target)
+    {
+        if (target.gameObject.tag == "Ground")
+        {
+          myBody.velocity = Vector2.zero;
+          currentBallState = BallState.aim;
+            GameManager.instance.CheckAllBallsGrounded();
+        }
+    }
+    
 }
